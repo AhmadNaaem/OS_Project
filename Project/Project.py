@@ -2,9 +2,13 @@ import os
 import multiprocessing
 import subprocess
 
-# Menu function for Process Management
+# Function to clear the terminal
+def clear_terminal():
+    os.system("clear" if os.name == "posix" else "cls")
+
 def process_management_menu():
     while True:
+        clear_terminal()
         print("\n PROCESS MANAGEMENT ".center(50, '-'))
         print("1. Create Process and Thread")
         print("2. Show Process List")
@@ -29,6 +33,7 @@ def process_management_menu():
 
 # Option 1: Create process and thread
 def create_process_and_thread():
+    clear_terminal()
     def process_task():
         print(f"Process running with PID: {os.getpid()}")
 
@@ -45,13 +50,18 @@ def create_process_and_thread():
     thread.start()
     thread.join()
 
+    input("\nPress Enter to return to the menu...")
+
 # Option 2: Show process list
 def show_process_list():
+    clear_terminal()
     print("\nCurrent processes running on the system:")
     subprocess.run(["ps", "-aux"])  # Lists all processes (Linux-specific)
+    input("\nPress Enter to return to the menu...")
 
 # Option 3: Share data between processes
 def share_data_between_processes():
+    clear_terminal()
     def process1(queue):
         data = "Output of Process 1"
         queue.put(data)
@@ -76,6 +86,7 @@ def share_data_between_processes():
         p2 = multiprocessing.Process(target=process1, args=(queue,))
     else:
         print("Invalid option.")
+        input("\nPress Enter to return to the menu...")
         return
 
     p1.start()
@@ -83,9 +94,12 @@ def share_data_between_processes():
     p1.join()
     p2.join()
 
+    input("\nPress Enter to return to the menu...")
+
 # Option 4: Manage custom programs
 def manage_custom_programs():
     while True:
+        clear_terminal()
         print("\n CUSTOM PROGRAM MANAGEMENT ".center(50, '-'))
         print("1. Create and Execute a Python Program")
         print("2. Delete a Custom Program")
@@ -103,6 +117,7 @@ print("This is a custom Python program.")
             print(f"Program {program_name} created.")
             print("Executing the program:")
             subprocess.run(["python3", program_name])
+            input("\nPress Enter to return to the menu...")
         elif choice == '2':
             program_name = input("Enter program name to delete (without extension): ") + ".py"
             if os.path.exists(program_name):
@@ -110,14 +125,17 @@ print("This is a custom Python program.")
                 print(f"Program {program_name} deleted.")
             else:
                 print(f"Program {program_name} does not exist.")
+            input("\nPress Enter to return to the menu...")
         elif choice == '3':
             break
         else:
             print("Invalid choice. Please try again.")
+            input("\nPress Enter to continue...")
 
 # Main Menu
 def main_menu():
     while True:
+        clear_terminal()
         print("\n MAIN MENU ".center(50, '-'))
         print("1. User Management")
         print("2. Service Management")
@@ -129,17 +147,21 @@ def main_menu():
 
         if choice == '1':
             print("User Management is not implemented yet.")
+            input("\nPress Enter to return to the menu...")
         elif choice == '2':
             print("Service Management is not implemented yet.")
+            input("\nPress Enter to return to the menu...")
         elif choice == '3':
             process_management_menu()
         elif choice == '4':
             print("Backup is not implemented yet.")
+            input("\nPress Enter to return to the menu...")
         elif choice == '5':
             print("Exiting...")
             break
         else:
             print("Invalid choice. Please try again.")
+            input("\nPress Enter to continue...")
 
 # Run the program
 if __name__ == "__main__":
