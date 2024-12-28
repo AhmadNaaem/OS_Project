@@ -38,6 +38,7 @@ class UserManagement:
                 print(user)
         except Exception as e:
             print(f"Failed to list users: {e}")
+        input("\nPress Enter to return to the menu...")
 
     @staticmethod
     def delete_user():
