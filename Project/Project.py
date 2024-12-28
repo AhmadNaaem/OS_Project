@@ -53,40 +53,40 @@ class Backup:
         except Exception as e:
             print(f"Error during directory backup: {e}")
 
-def boss_menu():
-    backup_root = ""
-    backup_folder = os.path.join(backup_root, "backup")
+    def boss_menu():
+        backup_root = ""
+        backup_folder = os.path.join(backup_root, "backup")
 
-    if not os.path.exists(backup_folder):
-        os.makedirs(backup_folder)
-        print(f"Created backup folder: {backup_folder}")
-    else:
-        print(f"Using existing backup folder: {backup_folder}")
-
-    while True:
-        clear_terminal()
-        print("Backup System")
-        print("1. Backup a file")
-        print("2. Backup a directory")
-        print("3. Exit")
-
-        choice = input("Enter your choice (1/2/3): ")
-
-        if choice == "1":
-            subprocess.run(["ls"]) 
-            source_file = input("Enter the name of the file to back up: ")
-            destination = backup_folder
-            Backup.backup_file(source_file, destination)
-        elif choice == "2":
-            subprocess.run(["ls"])
-            source_dir = input("Enter the name of the directory to back up: ")
-            destination = backup_folder
-            Backup.backup_dir(source_dir, destination)
-        elif choice == "3":
-            print("Exiting the backup system. Goodbye!")
-            break
+        if not os.path.exists(backup_folder):
+            os.makedirs(backup_folder)
+            print(f"Created backup folder: {backup_folder}")
         else:
-            print("Invalid choice. Please enter 1, 2, or 3.")
+            print(f"Using existing backup folder: {backup_folder}")
+
+        while True:
+            clear_terminal()
+            print("Backup System")
+            print("1. Backup a file")
+            print("2. Backup a directory")
+            print("3. Exit")
+
+            choice = input("Enter your choice [1-3]: ")
+
+            if choice == "1":
+                subprocess.run(["ls"]) 
+                source_file = input("Enter the name of the file to back up: ")
+                destination = backup_folder
+                Backup.backup_file(source_file, destination)
+            elif choice == "2":
+                subprocess.run(["ls"])
+                source_dir = input("Enter the name of the directory to back up: ")
+                destination = backup_folder
+                Backup.backup_dir(source_dir, destination)
+            elif choice == "3":
+                print("Exiting the backup system. Goodbye!")
+                break
+            else:
+                print("Invalid choice. Please enter 1, 2, or 3.")
 
 class UserManagement:
     def clear_terminal():
@@ -232,7 +232,7 @@ class Service_Management:
 
     # Delete folder
     def delete_folder(folder_name):
-    clear_terminal()
+        clear_terminal()
         try:
             os.rmdir(folder_name)
             print(f"Folder '{folder_name}' deleted successfully.")
