@@ -2,6 +2,7 @@ import os
 import multiprocessing
 import subprocess
 import signal
+import shutil
 
 class Backup:
     @staticmethod
@@ -23,37 +24,31 @@ class Backup:
             print(f"Error during file backup: {e}")
 
     @staticmethod
-    def backup_dir(source_dir, filename, destination):
-        clear_terminal()
+    def backup_dir(source_dir, destination):
         try:
             if not os.path.isdir(source_dir):
                 print(f"Error: {source_dir} is not a valid directory.")
                 return
 
-            # Search for the file in the directory
-            file_found = False
-            for root, dirs, files in os.walk(source_dir):
-                if filename in files:
-                    file_found = True
-                    source_file = os.path.join(root, filename)
-                    break
+            destination_path = os.path.join(destination, os.path.basename(source_dir))
 
-            if not file_found:
-                print(f"Error: File '{filename}' not found in the directory '{source_dir}'.")
+            if os.path.exists(destination_path):
+                print(f"Error: Destination directory '{destination_path}' already exists.")
                 return
 
-            # Proceed to backup the file
-            Backup.backup_file(source_file, destination)
-            print(f"File '{filename}' has been backed up from '{source_dir}' to '{destination}'.")
+            # Copy the entire directory and its contents
+            shutil.copytree(source_dir, destination_path)
+            print(f"Directory '{source_dir}' has been backed up to '{destination_path}'.")
 
         except Exception as e:
             print(f"Error during directory backup: {e}")
+
 
     def back_menu():
         destination = '/home/oslab'  # Set the backup destination path
 
         while True:
-            clear_terminal()
+            clear_terminal()     
             print("Backup System")
             print("1. Backup a file")
             print("2. Backup a directory")
@@ -62,12 +57,12 @@ class Backup:
             choice = input("Enter your choice [1-3]: ")
 
             if choice == "1":
-                source_file = input("Enter file name: ")
+                source_file = input("Enter the path of the file to back up: ")
+                clear_terminal()
                 Backup.backup_file(source_file, destination)
             elif choice == "2":
-                source_dir = input("Enter the directory path where you want to search for the file: ")
-                filename = input("Enter the name of the file to search for and back up: ")
-                Backup.backup_dir(source_dir, filename, destination)
+                source_dir = input("Enter the path of the directory to back up: ")
+                Backup.backup_dir(source_dir, destination)
             elif choice == "3":
                 print("We out")
                 break
