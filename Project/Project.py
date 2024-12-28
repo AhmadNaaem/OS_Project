@@ -1,6 +1,78 @@
 import os
 import multiprocessing
 import subprocess
+import signal
+
+class Backup:
+    @staticmethod
+    def backup_file(source_file, destination):
+        clear_terminal()
+        try:
+            if not os.path.isfile(source_file):
+                print(f"Error: {source_file} is not a valid file.")
+                return
+
+            if not os.path.exists(destination):
+                os.makedirs(destination)
+
+            with open(source_file, 'rb') as src, open(os.path.join(destination, os.path.basename(source_file)), 'wb') as dest:
+                dest.write(src.read())
+
+            print(f"File '{source_file}' has been backed up to '{destination}'.")
+        except Exception as e:
+            print(f"Error during file backup: {e}")
+
+    @staticmethod
+    def backup_dir(source_dir, filename, destination):
+        clear_terminal()
+        try:
+            if not os.path.isdir(source_dir):
+                print(f"Error: {source_dir} is not a valid directory.")
+                return
+
+            # Search for the file in the directory
+            file_found = False
+            for root, dirs, files in os.walk(source_dir):
+                if filename in files:
+                    file_found = True
+                    source_file = os.path.join(root, filename)
+                    break
+
+            if not file_found:
+                print(f"Error: File '{filename}' not found in the directory '{source_dir}'.")
+                return
+
+            # Proceed to backup the file
+            Backup.backup_file(source_file, destination)
+            print(f"File '{filename}' has been backed up from '{source_dir}' to '{destination}'.")
+
+        except Exception as e:
+            print(f"Error during directory backup: {e}")
+
+    def back_menu():
+        destination = '/home/oslab'  # Set the backup destination path
+
+        while True:
+            clear_terminal()
+            print("Backup System")
+            print("1. Backup a file")
+            print("2. Backup a directory")
+            print("3. Exit")
+
+            choice = input("Enter your choice [1-3]: ")
+
+            if choice == "1":
+                source_file = input("Enter file name: ")
+                Backup.backup_file(source_file, destination)
+            elif choice == "2":
+                source_dir = input("Enter the directory path where you want to search for the file: ")
+                filename = input("Enter the name of the file to search for and back up: ")
+                Backup.backup_dir(source_dir, filename, destination)
+            elif choice == "3":
+                print("We out")
+                break
+            else:
+                print("Invalid choice. Please enter 1, 2, or 3.")
 
 class UserManagement:
     @staticmethod
@@ -58,7 +130,7 @@ class UserManagement:
     def user_mgmt():
         while True:
             UserManagement.clear_terminal()
-            print("\nLinux User Management Script")
+            print("User Management Script")
             print("1. Create a user")
             print("2. Change password of a user")
             print("3. List all users")
@@ -92,19 +164,20 @@ class Process_Management:
                 print("1. Create Process and Thread")
                 print("2. Show Process List")
                 print("3. Share Data Between Processes")
-                print("4. Manage Custom Programs")
+                print("4. Delete Process")
                 print("5. Back to Main Menu")
                 print()
                 choice = input("Enter your choice [1-5]: ")
         
                 if choice == '1':
-                    create_process_and_thread()
+                    Process_Management.create_process_and_thread()
                 elif choice == '2':
-                    show_process_list()
+                    Process_Management.show_process_list()
                 elif choice == '3':
-                    share_data_between_processes()
+                    Process_Management.share_data_between_processes()
                 elif choice == '4':
-                    manage_custom_programs()
+                    pid = int(input("Enter PID to delete: "))
+                    Process_Management.del_process(pid)
                 elif choice == '5':
                     break
                 else:
@@ -135,7 +208,7 @@ class Process_Management:
         def show_process_list():
             clear_terminal()
             print("\nCurrent processes running on the system:")
-            subprocess.run(["ps", "-aux"])  # Lists all processes (Linux-specific)
+            subprocess.run(["sudo","ps", "-ef"])  # Lists all processes (Linux-specific)
             input("\nPress Enter to return to the menu...")
         
         # Option 3: Share data between processes
@@ -176,40 +249,24 @@ class Process_Management:
             input("\nPress Enter to return to the menu...")
         
         # Option 4: Manage custom programs
-        def manage_custom_programs():
-            while True:
-                clear_terminal()
-                print("\n CUSTOM PROGRAM MANAGEMENT ".center(50, '-'))
-                print("1. Create and Execute a Python Program")
-                print("2. Delete a Custom Program")
-                print("3. Back to Process Management Menu")
-                print()
-                choice = input("Enter your choice [1-3]: ")
-        
-                if choice == '1':
-                    program_name = input("Enter program name (without extension): ") + ".py"
-                    with open(program_name, "w") as file:
-                        file.write("""\
-        # Sample Python program
-        print("This is a custom Python program.")
-                        """)
-                    print(f"Program {program_name} created.")
-                    print("Executing the program:")
-                    subprocess.run(["python3", program_name])
-                    input("\nPress Enter to return to the menu...")
-                elif choice == '2':
-                    program_name = input("Enter program name to delete (without extension): ") + ".py"
-                    if os.path.exists(program_name):
-                        os.remove(program_name)
-                        print(f"Program {program_name} deleted.")
-                    else:
-                        print(f"Program {program_name} does not exist.")
-                    input("\nPress Enter to return to the menu...")
-                elif choice == '3':
-                    break
-                else:
-                    print("Invalid choice. Please try again.")
-                    input("\nPress Enter to continue...")
+        def del_process(pid):
+            try:
+                # Try to terminate gracefully first
+                os.kill(pid, signal.SIGTERM)  # Graceful termination
+                print(f"Process with PID {pid} terminated successfully using SIGTERM.")
+            except ProcessLookupError:
+                print(f"No process found with PID {pid}.")
+            except PermissionError:
+                print(f"Permission denied to terminate process with PID {pid}. Try running as superuser.")
+            except Exception as e:
+                print(f"An error occurred while attempting to terminate the process: {e}")
+
+            # If process doesn't terminate, force it using SIGKILL (last resort)
+            try:
+                os.kill(pid, signal.SIGKILL)  # Forceful termination
+                print(f"Process with PID {pid} terminated successfully using SIGKILL.")
+            except Exception as e:
+                print(f"Failed to forcefully terminate the process: {e}")
 
 # Main Menu
 def main_menu():
@@ -232,8 +289,7 @@ def main_menu():
         elif choice == '3':
             Process_Management.process_management_menu()
         elif choice == '4':
-            print("Backup is not implemented yet.")
-            input("\nPress Enter to return to the menu...")
+            Backup.back_menu()
         elif choice == '5':
             print("Exiting...")
             break
