@@ -224,7 +224,7 @@ def main_menu():
         choice = input("Enter your choice [1-5]: ")
 
         if choice == '1':
-            print("User Management is not implemented yet.")
+            User_Management.user_mgmt() 
             input("\nPress Enter to return to the menu...")
         elif choice == '2':
             print("Service Management is not implemented yet.")
