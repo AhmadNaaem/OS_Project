@@ -355,39 +355,45 @@ class Process_Management:
         # Option 3: Share data between processes
         def share_data_between_processes():
             clear_terminal()
-            def process1(queue):
-                data = "Output of Process 1"
-                queue.put(data)
-                print("Process 1: Data sent to queue.")
-        
-            def process2(queue):
+	    
+            def send_data(queue, process_name, message):
+                queue.put(message)
+                print(f"{process_name}: Data sent to queue -> {message}")
+	    
+            def receive_data(queue, process_name):
                 data = queue.get()
-                print(f"Process 2: Received data from Process 1 -> {data}")
-        
+                print(f"{process_name}: Received data -> {data}")
+
             print("\nSelect Process for Communication")
             print("1. Process 1 gives input to Process 2")
             print("2. Process 2 gives input to Process 1")
-            option = input("Enter your choice [1-2]: ")
-        
+            while True:
+                option = input("Enter your choice [1-2]: ")
+                if option in ['1', '2']:
+                    break
+                print("Invalid choice. Please enter 1 or 2.")
             queue = multiprocessing.Queue()
-        
+
+	    
+            process1_message = "Message from Process 1"
+            process2_message = "Message from Process 2"
+	    
             if option == '1':
-                p1 = multiprocessing.Process(target=process1, args=(queue,))
-                p2 = multiprocessing.Process(target=process2, args=(queue,))
+                p1 = multiprocessing.Process(target=send_data, args=(queue, "Process 1", process1_message))
+                p2 = multiprocessing.Process(target=receive_data, args=(queue, "Process 2"))
             elif option == '2':
-                p1 = multiprocessing.Process(target=process2, args=(queue,))
-                p2 = multiprocessing.Process(target=process1, args=(queue,))
-            else:
-                print("Invalid option.")
-                input("\nPress Enter to return to the menu...")
-                return
-        
+                p1 = multiprocessing.Process(target=send_data, args=(queue, "Process 2", process2_message))
+                p2 = multiprocessing.Process(target=receive_data, args=(queue, "Process 1"))
+
+	    
             p1.start()
             p2.start()
             p1.join()
             p2.join()
-        
-            input("\nPress Enter to return to the menu...")
+
+            print("\nProcesses have completed their tasks.")
+            input("Press Enter to return to the menu...")
+
         
         # Option 4: Manage custom programs
         def del_process(pid):
