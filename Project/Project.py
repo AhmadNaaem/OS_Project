@@ -262,34 +262,34 @@ class Service_Management:
             clear_terminal()
             if choice == "1":
                 folder_name = input("Enter folder name: ")
-                create_folder(folder_name)
+                Service_Management.create_folder(folder_name)
             elif choice == "2":
                 file_name = input("Enter file name: ")
-                create_file(file_name)
+                Service_Management.create_file(file_name)
             elif choice == "3":
                 #file_name = input("Enter file name: ")
-                show_file_rights()
+                Service_Management.show_file_rights()
             elif choice == "4":
                 file_name = input("Enter file name: ")
                 mode_input = input("Enter mode (e.g., 0o755)")
                 mode = int(mode_input, 8) if mode_input else None
-                change_file_rights(file_name, mode)
+                Service_Management.change_file_rights(file_name, mode)
             elif choice == "5":
                 file_name = input("Enter file name: ")
                 root_folder = "/home/oslab"
-                search_file(file_name, root_folder)
+                Service_Management.search_file(file_name, root_folder)
             elif choice == "6":
                 file_name = input("Enter file name: ")
-                delete_file(file_name)
+                Service_Management.delete_file(file_name)
             elif choice == "7":
                 folder_name = input("Enter folder name: ")
-                delete_folder(folder_name)
+                Service_Management.delete_folder(folder_name)
             elif choice == "8":
                 script_path = input("Enter script path: ")
-                execute_script(script_path)
+                Service_Management.execute_script(script_path)
             elif choice == "9":
                 app_name = input("Enter application name(all lowercase): ")
-                open_application(app_name)
+                Service_Management.open_application(app_name)
             elif choice == "10":
                 print("Exiting Service Management System.")
                 break
