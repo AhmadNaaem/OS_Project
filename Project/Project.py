@@ -3,6 +3,7 @@ import multiprocessing
 import subprocess
 import signal
 import shutil
+import threading
 
 class Backup:
     def backup_file(source_file, destination):
@@ -338,7 +339,7 @@ class Process_Management:
             process.join()
         
             # Create and start a thread
-            thread = multiprocessing.Process(target=thread_task)
+            thread = threading.Thread(target=thread_task)
             thread.start()
             thread.join()
         
